@@ -179,20 +179,9 @@ npm install mongodb @langchain/mongodb @langchain/core
 The MongoDB cache integration does not create a collection for your cache storage.
 Assuming you have already set up your collection, you can utilize it for caching as follows:
 
-```
-import { MongoClient } from "mongodb";
-import { MongoDBCache } from "@langchain/mongodb";
-import { OpenAI } from "@langchain/openai";
+import MongoDBCacheExample from "@examples/cache/chat_models/mongodb.ts";
 
-const client = new MongoClient(process.env.MONGODB_ATLAS_URI!);
-await client.connect();
-const collection = client.db("langchain").collection("llm_cache");
-
-const cache = new MongoDBCache({ collection });
-
-const model = new OpenAI({ cache });
-// Use the model as usual...
-```
+<CodeBlock language="typescript">{MongoDBCacheExample}</CodeBlock>
 
 Hint: The key-value cache is stored in the collection using `prompt` as the key, and `llm` as the value. You can speed up fetching cached entries by setting up an index (not a Vector Search index) on prompt.
 
