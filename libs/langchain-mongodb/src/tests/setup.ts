@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import {
   GenericContainer,
+  StartedTestContainer,
   StartupCheckStrategy,
   StartupStatus,
 } from "testcontainers";
@@ -69,7 +70,7 @@ class ReadyWhenMongotEstablished extends StartupCheckStrategy {
 export default async function setup() {
   if (!isUsingLocalAtlas()) return;
 
-  let container: GenericContainer;
+  let container: StartedTestContainer;
   try {
     container = await new GenericContainer("mongodb/mongodb-atlas-local")
       .withExposedPorts({ host: 27017, container: 27017 })
