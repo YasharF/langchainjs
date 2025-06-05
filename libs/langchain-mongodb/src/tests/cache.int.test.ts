@@ -29,9 +29,17 @@ let semanticCollection: Collection;
 beforeAll(async () => {
   client = new MongoClient(uri());
   await client.connect();
-  const db = client.db("langchain_test");
-  kvCollection = await db.createCollection("kv_cache");
-  semanticCollection = await db.createCollection("semantic_cache");
+
+  const kvNamespace = "langchain_test.kv_cache";
+  const semanticNamespace = "langchain_test.semantic_cache";
+  const [kvDbName, kvCollectionName] = kvNamespace.split(".");
+  const [semanticDbName, semanticCollectionName] = semanticNamespace.split(".");
+
+  kvCollection = await client.db(kvDbName).createCollection(kvCollectionName);
+  semanticCollection = await client
+    .db(semanticDbName)
+    .createCollection(semanticCollectionName);
+
   await semanticCollection.createSearchIndex({
     name: "default",
     definition: {
@@ -61,7 +69,6 @@ test("MongoDBCache: stores and retrieves generations", async () => {
   const generations: Generation[] = [{ text: "Paris" }];
 
   await cache.update(prompt, llmKey, generations);
-  // await waitForIndexToBeQueryable(kvCollection, "default");
   const result = await cache.lookup(prompt, llmKey);
   expect(result).toEqual(generations);
 
